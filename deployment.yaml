@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: album-example
+  labels:
+    app: album
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: album
+  template:
+    metadata:
+      labels:
+        app: album
+    spec:
+      containers:
+      - name: album
+        env:
+          - name: GIN_MODE
+            value: release
+        image: catfacts/album-example
+        ports:
+        - containerPort: 8080
+        resources:
+          limits:
+            cpu: "100m"
+            memory: "64Mi"
+        imagePullPolicy: Never
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: album-service
+spec:
+  selector:
+    app: album
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
